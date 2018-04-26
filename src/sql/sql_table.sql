@@ -14,6 +14,10 @@ MySQL - 5.1.72-community : Database - mybatis
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 /*Table structure for table `items` */
 
+CREATE DATABASE `mybatis`;
+
+USE `mybatis`;
+
 CREATE TABLE `items` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(32) NOT NULL COMMENT '商品名称',
