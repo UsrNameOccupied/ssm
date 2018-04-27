@@ -45,54 +45,17 @@ public class ItemsController extends BaseController {
         return modelAndView;
     }
 
-    //商品修改页面提示
-    //使用method = RequestMethod.GET来限制使用get方法
-//    @RequestMapping(value = "/editItems",method = RequestMethod.GET)
-//    public ModelAndView editItems() throws Exception
-//    {
-//        ModelAndView modelAndView=new ModelAndView();
-//
-//        //调用service查询商品的信息
-//        ItemsCustom itemsCustom=itemsService.findItemsById(1);
-//        //将模型数据传到jsp
-//        modelAndView.addObject("item",itemsCustom);
-//        //指定逻辑视图名
-//        modelAndView.setViewName("editItem");
-//
-//        return modelAndView;
-//    }
-
     //方法返回字符串，字符串就是逻辑视图名，Model作用时将数据填充到request域，在页面显示
     @RequestMapping(value = "/editItems",method = RequestMethod.GET)
     public String editItems(Model model, Integer id) throws Exception
     {
-
         //将id传到页面
         model.addAttribute("id",id);
-
         //调用service查询商品的信息
         ItemsCustom itemsCustom=itemsService.findItemsById(id);
-
         model.addAttribute("itemsCustom",itemsCustom);
-
         return "editItem";
     }
-
-
-//    @RequestMapping(value = "/editItems",method = RequestMethod.GET)
-//    public void editItems(HttpServletRequest request, HttpServletResponse response,
-////                          @RequestParam(value = "item_id",required = false,defaultValue = "1")
-//                                  Integer id) throws Exception
-//    {
-//
-//        //调用service查询商品的信息
-//        ItemsCustom itemsCustom=itemsService.findItemsById(id);
-//
-//        request.setAttribute("item",itemsCustom);
-//
-//        //zhuyi如果使用request转向页面，这里需要指定页面的完整路径
-//        request.getRequestDispatcher("/WEB-INF/jsp/editItem.jsp").forward(request,response);
-//    }
 
     //商品提交页面
     //itemsQueryVo是包装类型的pojo
@@ -101,25 +64,7 @@ public class ItemsController extends BaseController {
     {
         //进行数据回显
         model.addAttribute("id",itemsCustom.getId());
-//        model.addAttribute("item",itemsCustom);
-
-
         itemsService.updateItems(itemsCustom.getId(),itemsCustom);
-        //请求转发
-//        return "forward:queryItems.action";
-
-
         return "editItem";
-        //重定向
-//        return "redirect:queryItems.action";
     }
-//
-//    //自定义属性编辑器
-//    @InitBinder
-//    public void initBinder(WebDataBinder binder) throws  Exception{
-//
-//        //Date.class必须是与controller方法形参pojo属性一致的date类型，这里是java.util.Date
-//        binder.registerCustomEditor(Date.class,new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd HH-mm-ss"),true));
-//
-//    }
 }
