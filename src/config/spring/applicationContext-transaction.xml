@@ -36,5 +36,4 @@
 			<aop:advisor advice-ref="txAdvice" pointcut="execution(* service.impl.*.*(..))"/>
 		</aop:config>
 
-
 	</beans>
