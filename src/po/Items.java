@@ -2,6 +2,8 @@ package po;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class Items {
     private Integer id;
 
@@ -11,6 +13,7 @@ public class Items {
 
     private String pic;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH-mm-ss")
     private Date createtime;
 
     private String detail;

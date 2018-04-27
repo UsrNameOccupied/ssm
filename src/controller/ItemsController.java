@@ -31,7 +31,7 @@ public class ItemsController {
     //注入service
     @Autowired
     private ItemsService itemsService;
-
+    
     @RequestMapping("/queryItems")
     public ModelAndView queryItems() throws Exception {
         //调用servie来查询商品列表
@@ -97,14 +97,14 @@ public class ItemsController {
     //商品提交页面
     //itemsQueryVo是包装类型的pojo
     @RequestMapping("/editItemSubmit")
-    public String editItemSubmit(Model model,Integer id,@ModelAttribute(value = "itemsCustom") ItemsCustom itemsCustom) throws Exception
+    public String editItemSubmit(Model model,ItemsCustom itemsCustom) throws Exception
     {
         //进行数据回显
-        model.addAttribute("id",id);
+        model.addAttribute("id",itemsCustom.getId());
 //        model.addAttribute("item",itemsCustom);
 
 
-        itemsService.updateItems(id,itemsCustom);
+        itemsService.updateItems(itemsCustom.getId(),itemsCustom);
         //请求转发
 //        return "forward:queryItems.action";
 
