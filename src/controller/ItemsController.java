@@ -26,7 +26,7 @@ import java.util.List;
 @Controller
 //定义url的根路径，访问时根路径+方法名的url
 @RequestMapping("/items")
-public class ItemsController {
+public class ItemsController extends BaseController {
 
     //注入service
     @Autowired
