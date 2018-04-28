@@ -10,10 +10,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<sql id="query_items_where">
 		<if test="itemsCustom!=null">
 			<if test="itemsCustom.name!=null and itemsCustom.name!=''">
-				and  name like '%${itemsCustom.name}%'
+				and name like '%${itemsCustom.name}%'
 			</if>
 			<if test="itemsCustom.id!=null">
-				and  id = #{itemsCustom.id}
+				and id=#{itemsCustom.id}
 			</if>
 		</if>
 	</sql>
