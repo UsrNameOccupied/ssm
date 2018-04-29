@@ -13,7 +13,6 @@ public class Items {
 
     private String pic;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH-mm-ss")
     private Date createtime;
 
     private String detail;
