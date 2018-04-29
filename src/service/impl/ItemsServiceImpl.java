@@ -1,8 +1,10 @@
 package service.impl;
 
 import mapper.ItemsMapper;
+import pojo.Items;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import po.Items;
+
 import service.ItemsService;
 
 import java.util.List;

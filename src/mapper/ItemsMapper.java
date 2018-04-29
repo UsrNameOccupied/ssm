@@ -1,7 +1,8 @@
 package mapper;
 
 import java.util.List;
-import po.Items;
+
+import pojo.Items;
 
 public interface ItemsMapper {
     int insert(Items record);

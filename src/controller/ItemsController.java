@@ -5,7 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import po.Items;
+
+import pojo.Items;
 import service.ItemsService;
 import java.util.List;
 
