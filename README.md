@@ -71,7 +71,7 @@ public class ItemsServiceImpl implements ItemsService {
 }
 ```
 
-代码中通过Spring框架的DI注入依赖对象mapper即itemsMapperCustom对象，然后调用itemsMapperCustom的findItemsList方法实现商品列表查询,然后在spring配置文件applicationContext-service.xml中要进行service的配置，添加如下标签:
+代码中通过Spring框架的DI注入依赖对象mapper即itemsMapper对象，然后调用itemsMapper的findItemsList方法实现商品列表查询,然后在spring配置文件applicationContext-service.xml中要进行service的配置，添加如下标签:
 ```xml
 <!--商品配置的service-->
 	<bean id="itemsService" class="service.impl.ItemsServiceImpl"/>
@@ -91,7 +91,7 @@ public class ItemsController {
     @RequestMapping("/queryItems")
     public ModelAndView queryItems() throws Exception {
         //调用servie来查询商品列表
-        List<ItemsCustom> itemsList=itemsService.findItemsList(null);
+        List<Items> itemsList=itemsService.findItemsList();
 
         ModelAndView modelAndView=new ModelAndView();
         modelAndView.addObject("itemsList",itemsList);
@@ -181,16 +181,16 @@ public class ItemsController {
 在ItemsService接口中添加方法:
 ```java
    //根据商品id查询商品信息
-    public ItemsCustom findItemsById(int id) throws Exception;
+    public Items findItemsById(int id) throws Exception;
     
       //更新商品信息
     /**
      * 定义service接口，遵循单一职责，将业务参数细化(不要使用包装类型，比如map)
      * @param id 修改商品的id
-     * @param itemsCustom 修改商品的信息
+     * @param items 修改商品的信息
      * @throws Exception
      */
-    public void updateItems(Integer id,ItemsCustom itemsCustom) throws Exception;
+    public void updateItems(Integer id,Items items) throws Exception;
 ```
 
 然后是实现类ItemsServiceImpl.java:
@@ -201,27 +201,15 @@ public class ItemsController {
     private ItemsMapper itemsMapper;
 
     @Override
-    public ItemsCustom findItemsById(int id) throws Exception {
-
+    public Items findItemsById(int id) throws Exception {
         Items items=itemsMapper.selectByPrimaryKey(id);
-
-        //在这里以后随着需求的变化，需要查询商品的其它相关信息，返回到controller
-        //所以这个时候用到扩展类更好，如下
-        ItemsCustom itemsCustom=new ItemsCustom();
-        //将items的属性拷贝到itemsCustom
-        BeanUtils.copyProperties(items,itemsCustom);
-
-        return itemsCustom;
+        return items;
     }
 
     @Override
-    public void updateItems(Integer id,ItemsCustom itemsCustom) throws Exception {
+    public void updateItems(Integer id,Items items) throws Exception {
 
         //在service中一定要写业务代码
-
-
-
-
         //对于关键业务数据的非空校验
         if (id==null)
         {
@@ -229,7 +217,7 @@ public class ItemsController {
             //...
         }
 
-        itemsMapper.updateByPrimaryKeyWithBLOBs(itemsCustom);
+        itemsMapper.updateByPrimaryKeyWithBLOBs(items);
     }
 ```
 
@@ -257,7 +245,7 @@ public class ItemsController {
         ModelAndView modelAndView=new ModelAndView();
 
         //调用service查询商品的信息
-        ItemsCustom itemsCustom=itemsService.findItemsById(1);
+        Items itemsCustom=itemsService.findItemsById(1);
         //将模型数据传到jsp
         modelAndView.addObject("item",itemsCustom);
         //指定逻辑视图名
@@ -331,8 +319,7 @@ public class ItemsController {
 
     
         //调用service查询商品的信息
-        ItemsCustom itemsCustom=itemsService.findItemsById(1);
-
+        Items itemsCustom=itemsService.findItemsById(1);
         model.addAttribute("itemsCustom",itemsCustom);
 
         return "editItem";
@@ -348,10 +335,8 @@ public class ItemsController {
     {
 
         //调用service查询商品的信息
-        ItemsCustom itemsCustom=itemsService.findItemsById(id);
-
+        Items itemsCustom=itemsService.findItemsById(id);
         request.setAttribute("item",itemsCustom);
-
         //注意如果使用request转向页面，这里需要指定页面的完整路径
         request.getRequestDispatcher("/WEB-INF/jsp/editItem.jsp").forward(request,response);
     }
@@ -412,7 +397,7 @@ model.addAttribute("item", item);
     {
 
         //调用service查询商品的信息
-        ItemsCustom itemsCustom=itemsService.findItemsById(id);
+        Items itemsCustom=itemsService.findItemsById(id);
 
         request.setAttribute("item",itemsCustom);
 
@@ -437,21 +422,15 @@ model.addAttribute("item", item);
 修改Controller中的editItemSubmit()方法:
 ```java
 //商品提交页面
-    //itemsQueryVo是包装类型的pojo
     @RequestMapping("/editItemSubmit")
-    public String editItemSubmit(Integer id,ItemsCustom itemsCustom) throws Exception
+    public String editItemSubmit(Integer id,Items items) throws Exception
     {
         //进行数据回显
         model.addAttribute("id",id);
-//        model.addAttribute("item",itemsCustom);
-
-
+//      model.addAttribute("item",itemsCustom);
         itemsService.updateItems(id,itemsCustom);
         //请求转发
-//        return "forward:queryItems.action";
-
-
-
+//      return "forward:queryItems.action";
         //重定向
        return "redirect:queryItems.action";
     }
@@ -463,192 +442,6 @@ model.addAttribute("item", item);
 ##### 2.6.3.2绑定包装的pojo类型
 这里我们复制editItem.jsp页面粘贴出一个editItem2.jsp页面，染护修改editItem2.jsp中的参数名为itemsCustom.name、itemsCustom.price、itemsCustom.detail，修改Controller中的editItemSubmit方法中的形参为`public String editItemSubmit(Integer id,ItemsCustom itemsCustom,ItemsQueryVo itemsQueryVo) throws Exception{...}
 `修改editItems的返回值类型为`editItems2`。运行程序，点击提交按钮，页面信息成功传入到itemsQueryVo的属性中。成功运行后我们还是将信息改回成原来的模样，方便后面的测试。  
-
-#### 2.6.4使用属性编辑器完成自定义绑定
-
-此时我们在editItem.jsp中添加上日期的信息展示:
-```xml
-<tr>
-	<td>商品生产日期</td>
-	<td><input type="text" name="createtime" value="<fmt:formatDate value="${itemsCustom.createtime}" pattern="yyyy-MM-dd HH-mm-ss"/>"/></td>
-</tr>
-```
-
-然后运行程序，当点击提交按钮时会报错，你知道为什么吗？原因是因为通过点击提交按钮，页面中参数名为"createtime"的参数名由于跟Controller方法中的形参ItemsCustom有相同的属性名createtime，所以此时页面中的日期会映射到ItemsCustom的Date属性中,但是从页面传过来的日期是字符串类型，而ItemsCustom的属性是java.util.Date类型，所以当然会报错。这样的话，我们就必须完成日期字符串向java类型日期的转换。此时我们就需要自定义日期类型的绑定，即使用属性编辑器来完成自定义的绑定。有如下两种方法:1.使用WebDataBinder（了解），在Controller中添加如下代码:
-```java
-    //自定义属性编辑器
-    @InitBinder
-    public void initBinder(WebDataBinder binder) throws  Exception{
-
-        //Date.class必须是与controller方法形参pojo属性一致的date类型，这里是java.util.Date
-        binder.registerCustomEditor(Date.class,new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd HH-mm-ss"),true));
-    }
-```
-运行程序，点击提交按钮后不会再出现报错信息，且editItem.jsp页面的createtime参数也成功传入到了ItemsCustom的createtime属性中。使用这种方法的问题是无法在多个controller共用。那我们就来介绍第二种方法:使用WebBindingInitializer（了解）。首先我们需要编写一个自定义属性编辑器CustomPropertyEditor.java，代码如下:
-```java
-public class CustomPropertyEditor implements PropertyEditorRegistrar
-{
-
-    @Override
-    public void registerCustomEditors(PropertyEditorRegistry binder) {
-        binder.registerCustomEditor(Date.class,new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd HH-mm-ss"),true));
-
-    }
-}
-```
-
-然后要在springmvc.xml文件中加入对它的配置:
-```xml
-<!-- 注册属性编辑器 -->
-	<bean id="customPropertyEditor" class="cn.itcast.ssm.propertyeditor.CustomPropertyEditor"></bean> 
-<!-- 自定义webBinder -->
-	<bean id="customBinder"
-		class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-		<property name="propertyEditorRegistrars">
-			<list>
-				<ref bean="customPropertyEditor"/>
-			</list>
-		</property>
-	</bean>
-```
-
-然后要在注解适配器的配置标签中加入如下属性:
-```xml
-<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-	<property name="webBindingInitializer" ref="customBinder"></property> 
-</bean>
-```
-
-这样我们便可以注释掉第一种属性编辑器的代码了，使用第二种方式虽然配置很繁琐，但是很适用。运行程序，也成功将editItem.jsp页面的createtime参数映射到ItemsCustom的createtime属性中。下面我再讲一种自定义绑定参数的方法。
-
-#### 2.6.5使用转换器完成自定义参数绑定(想往架构师方向发展的要掌握这种方法)
-首先要定义一个转换器CustomDateConverter.java完成日期的转换，代码如下:
-```java
-public class CustomDateConverter implements Converter<String,Date> {
-
-    @Override
-    public Date convert(String source) {
-
-        try{
-            return new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").parse(source);
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-}
-```
-在定义一个StringTrimConverter.java用于去除日期字符串两边的空格,代码如下:
-```java
-public class StringTrimConverter implements Converter<String,String> {
-
-    @Override
-    public String convert(String source) {
-
-        try{
-            //去掉字符串两边的空格，如果去除后为空则返回null
-            if (source!=null)
-            {
-                source=source.trim();
-                if (source.equals(""))
-                    return null;
-            }
-        }catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return source;
-    }
-}
-```
-
-定义好后就需要对转换器进行配置:思路就是先定义一个转换器然后注入到适配器中。而对于转换器在springmvc.xml中的配置有两种方式，第一种方式针对不使用`<mvc:annotation-driven>`,第二种方式针对使用`<mvc:annotation-driven>`,我们就来讲讲第二种方式。在springmvc.xml中添加如下配置:
-```xml
-    <!--mvc的注解驱动器，通过它可以替代下边的处理器映射器和适配器-->
-    <mvc:annotation-driven conversion-service="conversionService">
-    </mvc:annotation-driven>
-
-    <!--转换器-->
-    <!-- conversionService -->
-    <bean id="conversionService"
-          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
-        <!-- 转换器 -->
-        <property name="converters">
-            <list>
-                <bean class="controller.converter.CustomDateConverter"/>
-                <bean class="controller.converter.StringTrimConverter"/>
-            </list>
-        </property>
-    </bean>
-```
-
-使用了注解驱动的配置后，我们就可以注释掉处理器映射器与处理器适配器了。运行程序，也成功将editItem.jsp页面的createtime参数映射到ItemsCustom的createtime属性中。
-
-由于往后我们还要进行json数据的开发，所以这里我们还是不采用使用注解驱动的方式，还是采用注解映射器与注解适配器的方式进行开发。修改后的最后的springmvc.xml配置信息如下:
-```xml
-  <!--使用spring组件扫描
-    一次性配置此包下所有的Handler-->
-    <context:component-scan base-package="controller"/>
-
-    <!--mvc的注解驱动器，通过它可以替代下边的处理器映射器和适配器-->
-    <!--<mvc:annotation-driven></mvc:annotation-driven>-->
-
-    <!--注解处理器映射器-->
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
-
-    <!--注解的适配器-->
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-        <property name="webBindingInitializer" ref="customBinder"></property>
-    </bean>
-
-    <!--配置视图解析器
-    要求将jstl的包加到classpath-->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/jsp/" />
-        <property name="suffix" value=".jsp" />
-    </bean>
-
-
-
-      <!-- 自定义webBinder -->
-    <bean id="customBinder"
-          class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
-        <property name="conversionService" ref="conversionService"/>
-        <!--早期的自定义属性编辑器-->
-        <!--<property name="propertyEditorRegistrars">-->
-            <!--<list>-->
-                <!--<ref bean="customPropertyEditor"/>-->
-            <!--</list>-->
-        <!--</property>-->
-    </bean>
-
-    <!-- 注册属性编辑器 -->
-    <bean id="customPropertyEditor" class="controller.propertyeditor.CustomPropertyEditor"></bean>
-
-
-
-    <!--mvc的注解驱动器，通过它可以替代下边的处理器映射器和适配器-->
-    <!--<mvc:annotation-driven conversion-service="conversionService">-->
-    <!--</mvc:annotation-driven>-->
-
-    <!--转换器-->
-    <!-- conversionService -->
-    <bean id="conversionService"
-          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
-        <!-- 转换器 -->
-        <property name="converters">
-            <list>
-                <bean class="controller.converter.CustomDateConverter"/>
-                <bean class="controller.converter.StringTrimConverter"/>
-            </list>
-        </property>
-    </bean>
-```
-
-这个converter的配置是一劳永逸的配置，也就是系统架构级别的配置，希望你能成功掌握。
 
 好了，通过上述的案例，便成功的使用了SSM框架对对商品信息的三个功能。希望通过这个案例，你能成功掌握SSM框架。接下来我将讲解使用SSM进行注解开发的高级知识。博客链接[SSM注解开发的高级知识讲解](http://codingxiaxw.cn/2016/11/19/46-ssm%E9%AB%98%E7%BA%A7%E5%BC%80%E5%8F%91/),源码链接[点击这里前往我的github](https://github.com/codingXiaxw/ssm2)
 
