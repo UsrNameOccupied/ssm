@@ -1,7 +1,5 @@
 ## 一个案例带你快速入门SSM开发
 
-**写在前面的话:**关于SSM框架的工程搭建请点击这里前往我的博客[SSM整合工程的搭建](http://codingxiaxw.cn/2016/11/15/44-ssm%E7%9A%84%E6%95%B4%E5%90%88/)
-
 ## 开发环境
 eclipse Spring5.x+SpringMVC+Mybatis  
 没有用到maven管理工具。
@@ -434,8 +432,8 @@ model.addAttribute("item", item);
 **问题:**如果controller方法形参中有多个pojo且pojo中有重复的属性，使用简单pojo绑定无法有针对性的绑定，比如:方法形参有items和User，pojo同时存在name属性，从http请求过程的name无法有针对性的绑定到items或user。要解决此种方法我们就需要用到下面的绑定包装的pojo类型。
 
 ##### 2.6.3.2绑定包装的pojo类型
-这里我们复制editItem.jsp页面粘贴出一个editItem2.jsp页面，染护修改editItem2.jsp中的参数名为itemsCustom.name、itemsCustom.price、itemsCustom.detail，修改Controller中的editItemSubmit方法中的形参为`public String editItemSubmit(Integer id,ItemsCustom itemsCustom,ItemsQueryVo itemsQueryVo) throws Exception{...}
-`修改editItems的返回值类型为`editItems2`。运行程序，点击提交按钮，页面信息成功传入到itemsQueryVo的属性中。成功运行后我们还是将信息改回成原来的模样，方便后面的测试。  
+这里我们复制editItem.jsp页面粘贴出一个editItem2.jsp页面，染护修改editItem2.jsp中的参数名为itemsCustom.name、itemsCustom.price、itemsCustom.detail，修改Controller中的editItemSubmit方法中的形参为`public String editItemSubmit(Integer id,Items items) throws Exception{...}
+`修改editItems的返回值类型为`editItems2`。运行程序，点击提交按钮，页面信息成功传入到items的属性中。成功运行后我们还是将信息改回成原来的模样，方便后面的测试。  
 
 好了，通过上述的案例，便成功的使用了SSM框架对对商品信息的三个功能。希望通过这个案例，你能成功掌握SSM框架。接下来我将讲解使用SSM进行注解开发的高级知识。博客链接[SSM注解开发的高级知识讲解](http://codingxiaxw.cn/2016/11/19/46-ssm%E9%AB%98%E7%BA%A7%E5%BC%80%E5%8F%91/),源码链接[点击这里前往我的github](https://github.com/codingXiaxw/ssm2)
 
