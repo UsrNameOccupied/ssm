@@ -2,11 +2,8 @@ package service.impl;
 
 import mapper.ItemsMapper;
 import pojo.Items;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import service.ItemsService;
-
 import java.util.List;
 
 /**
@@ -30,7 +27,6 @@ public class ItemsServiceImpl implements ItemsService {
 
     @Override
     public void updateItems(Integer id,Items items) throws Exception {
-
         //在service中一定要写业务代码
         //对于关键业务数据的非空校验
         if (id==null)

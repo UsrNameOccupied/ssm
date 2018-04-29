@@ -1,7 +1,6 @@
 package mapper;
 
 import java.util.List;
-
 import pojo.Items;
 
 public interface ItemsMapper {
