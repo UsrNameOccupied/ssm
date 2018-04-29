@@ -18,68 +18,7 @@ sql语句见github中.sql文件。
 ### 1.3持久层mapper的编写
 编写好数据库后我们便可以通过MyBatis逆向工程快速生成对单表映射的sql，包括mapper.java、mapper.xml和pojo类。
 
-根据逆向工程生成的这三个文件与单表都是一对一的关系，例如通过Items表会生成ItemsMapper.java、ItemsMapper.xml和Items.java的pojo类，这里我们为了便于需求的扩展，所以另外自己编写一个ItemsCustom.java并继承Items.java和Items.java的包装类ItemsQueryVo.java，代码如下:
-```java
-public class ItemsQueryVo {
-	//商品信息
-	private ItemsCustom itemsCustom;
-
-	public ItemsCustom getItemsCustom() {
-		return itemsCustom;
-	}
-
-	public void setItemsCustom(ItemsCustom itemsCustom) 	{
-		this.itemsCustom = itemsCustom;
-	}	
-}
-```
-
-然后自己编写一个ItemsCustomerMapper.xml:
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.ItemsMapperCustom">
-
-	<!-- 商品查询的sql片段
-	建议是以单表为单位定义查询条件
-	建议将常用的查询条件都写出来
-	 -->
-	<sql id="query_items_where">
-		<if test="itemsCustom!=null">
-			<if test="itemsCustom.name!=null and itemsCustom.name!=''">
-				and  name like '%${itemsCustom.name}%'
-			</if>
-			<if test="itemsCustom.id!=null">
-				and  id = #{itemsCustom.id}
-			</if>
-		
-		</if>
-		
-	</sql>
-	
-	<!-- 商品查询 
-	parameterType：输入 查询条件
-	-->
-	
-	<select id="findItemsList" parameterType="po.ItemsQueryVo"
-			resultType="po.ItemsCustom">
-		SELECT * FROM items 
-		<where>
-			<include refid="query_items_where"/>
-		</where>
-	</select>
-</mapper>
-```
-与ItemsCustomMapper.java:
-```java
-public interface ItemsMapperCustom {
-	// 商品查询列表
-	List<ItemsCustom> findItemsList(ItemsQueryVo itemsQueryVo)
-			throws Exception;
-}
-```
+根据逆向工程生成的这三个文件与单表都是一对一的关系，例如通过Items表会生成ItemsMapper.java、ItemsMapper.xml和Items.java的pojo类。
 
 至于Mapper的配置我们已经在springmvc.xml中通过spring组件扫描器
 ```xml
@@ -105,7 +44,7 @@ public interface ItemsMapperCustom {
 
 
 ### 1.4业务逻辑层service的编写
-首先我们在service包下创建一个商品的service接口ItemsService.java文件，里面编写的方法和ItemsCustomMapper.java中的方法对应以实现商品列表的查询:
+首先我们在service包下创建一个商品的service接口ItemsService.java文件，里面编写的方法和ItemsMapper.java中的方法对应以实现商品列表的查询:
 ```java
 public interface ItemsService {
 
@@ -121,13 +60,13 @@ public class ItemsServiceImpl implements ItemsService {
 
     //注入mapper
     @Autowired
-    private ItemsMapperCustom itemsMapperCustom;
+    private ItemsMapper itemsMapper;
 
     //商品的查询列表
     @Override
-    public List<ItemsCustom> findItemsList(ItemsQueryVo itemsQueryVo) throws Exception {
+    public List<Items> findItemsList() throws Exception {
 
-        return itemsMapperCustom.findItemsList(itemsQueryVo);
+        return itemsMapper.findItemsList();
     }
 }
 ```
