@@ -48,10 +48,6 @@ public class ItemsServiceImpl implements ItemsService {
     public void updateItems(Integer id,ItemsCustom itemsCustom) throws Exception {
 
         //在service中一定要写业务代码
-
-
-
-
         //对于关键业务数据的非空校验
         if (id==null)
         {
