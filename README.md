@@ -3,7 +3,7 @@
 **写在前面的话:**关于SSM框架的工程搭建请点击这里前往我的博客[SSM整合工程的搭建](http://codingxiaxw.cn/2016/11/15/44-ssm%E7%9A%84%E6%95%B4%E5%90%88/)
 
 ## 开发环境
-IDEA Spring3.x+SpringMVC+Mybatis  
+eclipse Spring5.x+SpringMVC+Mybatis  
 没有用到maven管理工具。
 
 ## 1.实现商品的列表展示
@@ -49,8 +49,7 @@ sql语句见github中.sql文件。
 public interface ItemsService {
 
     //商品的查询列表
-    public List<ItemsCustom> findItemsList(ItemsQueryVo itemsQueryVo)
-            throws Exception;
+    public List<Items> findItemsList() throws Exception;
 }
 ```
 
@@ -74,7 +73,7 @@ public class ItemsServiceImpl implements ItemsService {
 代码中通过Spring框架的DI注入依赖对象mapper即itemsMapper对象，然后调用itemsMapper的findItemsList方法实现商品列表查询,然后在spring配置文件applicationContext-service.xml中要进行service的配置，添加如下标签:
 ```xml
 <!--商品配置的service-->
-	<bean id="itemsService" class="service.impl.ItemsServiceImpl"/>
+<bean id="itemsService" class="service.impl.ItemsServiceImpl"/>
 ```
 便可。接下来便应该完成控制层Controller.java的代码编写了。
 
@@ -316,12 +315,9 @@ public class ItemsController {
     @RequestMapping(value = "/editItems",method = RequestMethod.GET)
     public String editItems(Model model) throws Exception
     {
-
-    
         //调用service查询商品的信息
         Items itemsCustom=itemsService.findItemsById(1);
         model.addAttribute("itemsCustom",itemsCustom);
-
         return "editItem";
     }
 ```
@@ -359,10 +355,10 @@ response.getWriter().write("json串");
     @RequestMapping("/editItemSubmit")
     public String editItemSubmit() throws Exception
     {
-        //请求转发,使用forward进行请求转发，request数据可以共享，url地址栏不会
-//        return "forward:queryItems.action";
+       // 请求转发,使用forward进行请求转发，request数据可以共享，url地址栏不会
+       // return "forward:queryItems.action";
 
-        //使用redirect进行重定向，request数据无法共享，url地址栏会发生变化的。由于我们重定向的页面queryItems.action与本页面editItemSubmit.action在同一根目录下，所以不需要加入根路径
+       // 使用redirect进行重定向，request数据无法共享，url地址栏会发生变化的。由于我们重定向的页面queryItems.action与本页面editItemSubmit.action在同一根目录下，所以不需要加入根路径
        return "redirect:queryItems.action";
     }
 ```
@@ -398,9 +394,7 @@ model.addAttribute("item", item);
 
         //调用service查询商品的信息
         Items itemsCustom=itemsService.findItemsById(id);
-
         request.setAttribute("item",itemsCustom);
-
         //zhuyi如果使用request转向页面，这里需要指定页面的完整路径
         request.getRequestDispatcher("/WEB-INF/jsp/editItem.jsp").forward(request,response);
     }
@@ -421,17 +415,17 @@ model.addAttribute("item", item);
 
 修改Controller中的editItemSubmit()方法:
 ```java
-//商品提交页面
+    // 商品提交页面
     @RequestMapping("/editItemSubmit")
     public String editItemSubmit(Integer id,Items items) throws Exception
     {
-        //进行数据回显
+        // 进行数据回显
         model.addAttribute("id",id);
-//      model.addAttribute("item",itemsCustom);
+        // model.addAttribute("item",itemsCustom);
         itemsService.updateItems(id,itemsCustom);
-        //请求转发
-//      return "forward:queryItems.action";
-        //重定向
+        // 请求转发
+        // return "forward:queryItems.action";
+        // 重定向
        return "redirect:queryItems.action";
     }
 ```
