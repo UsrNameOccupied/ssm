@@ -30,6 +30,10 @@
     from items where id = #{id,jdbcType=INTEGER}
   </select>
   
+  <select id="findItemsList" resultMap="ResultMapWithBLOBs" >
+    SELECT * FROM items
+  </select>
+  
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from items where id = #{id,jdbcType=INTEGER}
   </delete>

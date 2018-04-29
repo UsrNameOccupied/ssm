@@ -1,8 +1,6 @@
 package service;
 
-import po.ItemsCustom;
-import po.ItemsQueryVo;
-
+import po.Items;
 import java.util.List;
 
 /**
@@ -13,11 +11,10 @@ import java.util.List;
 public interface ItemsService {
 
     //商品的查询列表
-    public List<ItemsCustom> findItemsList(ItemsQueryVo itemsQueryVo)
-            throws Exception;
+    public List<Items> findItemsList() throws Exception;
 
     //根据商品id查询商品信息
-    public ItemsCustom findItemsById(int id) throws Exception;
+    public Items findItemsById(int id) throws Exception;
 
     //更新商品信息
     /**
@@ -26,6 +23,6 @@ public interface ItemsService {
      * @param itemsCustom 修改商品的信息
      * @throws Exception
      */
-    public void updateItems(Integer id,ItemsCustom itemsCustom) throws Exception;
+    public void updateItems(Integer id,Items items) throws Exception;
 
 }

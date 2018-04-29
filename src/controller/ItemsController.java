@@ -1,23 +1,12 @@
 package controller;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import po.Items;
-import po.ItemsCustom;
 import service.ItemsService;
-
-import javax.annotation.Resource;
-import javax.jws.WebParam;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,7 +24,7 @@ public class ItemsController extends BaseController {
     @RequestMapping("/queryItems")
     public ModelAndView queryItems() throws Exception {
         //调用servie来查询商品列表
-        List<ItemsCustom> itemsList=itemsService.findItemsList(null);
+        List<Items> itemsList=itemsService.findItemsList();
 
         ModelAndView modelAndView=new ModelAndView();
         modelAndView.addObject("itemsList",itemsList);
@@ -49,22 +38,25 @@ public class ItemsController extends BaseController {
     @RequestMapping(value = "/editItems",method = RequestMethod.GET)
     public String editItems(Model model, Integer id) throws Exception
     {
+        //调用service查询商品的信息
+        Items items=itemsService.findItemsById(id);
+
         //将id传到页面
         model.addAttribute("id",id);
-        //调用service查询商品的信息
-        ItemsCustom itemsCustom=itemsService.findItemsById(id);
-        model.addAttribute("itemsCustom",itemsCustom);
+        model.addAttribute("itemsCustom",items);
         return "editItem";
     }
 
     //商品提交页面
     //itemsQueryVo是包装类型的pojo
     @RequestMapping("/editItemSubmit")
-    public String editItemSubmit(Model model,ItemsCustom itemsCustom) throws Exception
+    public String editItemSubmit(Model model,Items items) throws Exception
     {
         //进行数据回显
-        model.addAttribute("id",itemsCustom.getId());
-        itemsService.updateItems(itemsCustom.getId(),itemsCustom);
+        itemsService.updateItems(items.getId(),items);
+
+        model.addAttribute("id",items.getId());
+        model.addAttribute("itemsCustom",items);
         return "editItem";
     }
 }
